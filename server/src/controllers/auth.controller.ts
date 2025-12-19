@@ -96,7 +96,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     console.log('Login attempt:', email);
 
-    // Поиск пользователя
     const user = await User.findOne({ where: { email } });
     if (!user) {
       console.log('User not found:', email);
@@ -104,7 +103,6 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Проверка пароля
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
       console.log('Invalid password for:', email);
@@ -112,14 +110,12 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Генерируем токен
     const token = generateToken({
       userId: user.id,
       email: user.email,
       role: user.role,
     });
 
-    // Возвращаем ответ без пароля
     const userResponse = {
       id: user.id,
       email: user.email,
@@ -148,7 +144,6 @@ export const getCurrentUser = async (req: AuthRequest, res: Response): Promise<v
       return;
     }
 
-    // Возвращаем данные пользователя из middleware
     const userResponse = {
       id: req.user.id,
       email: req.user.email,

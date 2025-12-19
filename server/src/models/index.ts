@@ -23,6 +23,10 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+  // Ассоциации
+  public readonly documents?: Document[];
+  public readonly signatures?: Signature[];
+
   public async comparePassword(candidatePassword: string): Promise<boolean> {
     return bcrypt.compare(candidatePassword, this.password);
   }
@@ -104,6 +108,10 @@ export class Document extends Model<DocumentAttributes, DocumentCreationAttribut
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  // Ассоциации
+  public readonly creator?: User;
+  public readonly signatures?: Signature[];
 }
 
 Document.init({
@@ -173,6 +181,10 @@ export class Signature extends Model<SignatureAttributes, SignatureCreationAttri
   public userId!: string;
 
   public readonly signedAt!: Date;
+  
+  // Ассоциации
+  public readonly document?: Document;
+  public readonly user?: User;
 }
 
 Signature.init({
@@ -211,6 +223,22 @@ Signature.belongsTo(Document, { foreignKey: 'documentId' });
 Signature.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(Document, { foreignKey: 'createdBy' });
 User.hasMany(Signature, { foreignKey: 'userId' });
+
+// Типы для TypeScript с ассоциациями
+export type UserWithAssociations = User & {
+  documents?: Document[];
+  signatures?: Signature[];
+};
+
+export type DocumentWithAssociations = Document & {
+  creator?: User;
+  signatures?: (Signature & { user?: User })[];
+};
+
+export type SignatureWithAssociations = Signature & {
+  document?: Document;
+  user?: User;
+};
 
 export interface JwtUserPayload {
   userId: string;

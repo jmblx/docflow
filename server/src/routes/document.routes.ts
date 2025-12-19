@@ -6,7 +6,9 @@ import {
   updateDocument, 
   deleteDocument,
   signDocument,
-  downloadDocument
+  downloadDocument,
+  getDocumentStats,
+  downloadSignedDocuments,
 } from '../controllers/document.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 import { upload } from '../middleware/upload.middleware';
@@ -20,11 +22,15 @@ router.use(authenticate);
 // Получить все документы
 router.get('/', getDocuments);
 
+router.get('/download/signed', downloadSignedDocuments);
+
+router.get('/stats', getDocumentStats);
+
 // Получить документ по ID
 router.get('/:id', getDocumentById);
 
 // Скачать документ
-router.get('/:id/download', downloadDocument);
+router.get('/:id/download', authenticate, downloadDocument);
 
 // Загрузить документ (только админ)
 router.post(
